@@ -1,24 +1,26 @@
 package nl.hva.miw.ads.linkedlists;
 
+import java.util.List;
+
 /**
  * Singly linked list.
  *
  * @author michel
  */
-public class SinglyLinkedList {
+public class SinglyLinkedList<E> implements List<E> {
 
-    private class Node {
-        int value;
+    private class Node<E> {
+        E value;
 
-        Node next=null;      // Link to next node
+        Node<E> next = null;      // Link to next node
 
-        public Node(int value) {
+        public Node(E value) {
             this.value = value;
         }
     }
 
     private int size = 0;           // Length of list
-    private Node head = null;      // Link to first node
+    private Node<E> head = null;      // Link to first node
 
     public SinglyLinkedList() {
     }
@@ -33,8 +35,8 @@ public class SinglyLinkedList {
      * @param index
      * @return
      */
-    public int get( int index ) {
-        return -1;
+    public E get( int index ) {
+        return findNodeAtIndex(index).value;
     }
 
     /**
@@ -43,20 +45,53 @@ public class SinglyLinkedList {
      * @param index
      * @param value
      */
-    public void add( int index, int value ) {
+    public void add( int index, E value ) {
         // Implement, create a new Node for this entry.
 
-        Node n = new Node( value );
+        Node<E> newNode = new Node<>( value );
 
-        // Implement the rest
+        if (index < 0 || index > size) {
+            throw new IndexOutOfBoundsException();
+        } else if (index == 0) {
+            newNode.next = head;
+            head = newNode;
+        } else {
+            Node<E> previousNode = findNodeAtIndex(index - 1);
+            newNode.next = previousNode.next;
+            previousNode.next = newNode;
+        }
+
+        size++;
+    }
+
+    private Node<E> findNodeAtIndex(int index) {
+        if (index < 0 || index > size) {
+            throw new IndexOutOfBoundsException();
+        }
+
+        Node<E> currentNode = head;
+        for (int i = 0; i < index; i++) {
+            currentNode = currentNode.next;
+        }
+        return currentNode;
     }
 
     /**
-     * Remove an elmeent from the list at position index, if it exists.
+     * Remove an element from the list at position index, if it exists.
      *
      * @param index
      */
     public void remove( int index ) {
+        if (index < 0 || index >= size) {
+            throw new IndexOutOfBoundsException();
+        } else if (index == 0) {
+            head = head.next;
+        } else {
+            Node<E> previousNode = findNodeAtIndex(index - 1);
+            previousNode.next = previousNode.next.next;
+        }
+
+        size--;
         // Implement, remove the corresponding node from the linked list.
     }
 
@@ -67,7 +102,7 @@ public class SinglyLinkedList {
 
         sb.append("SinglyLinkedList{size=").append(size).append("}");
 
-        Node current = this.head;
+        Node<E> current = this.head;
         while ( current != null ) {
             sb.append(" ");
             sb.append( current.value );
